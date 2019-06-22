@@ -1,8 +1,10 @@
 package com.example.esmemorandum;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 import android.widget.ListView;
 
 import com.example.esmemorandum.adapter.ArrayListItem;
@@ -37,6 +39,15 @@ public class MainActivity extends AppCompatActivity {
 
         ListViewAdapter listViewAdapter = new ListViewAdapter(getApplicationContext(), 0, arrayListItems);
         listView.setAdapter(listViewAdapter);
+
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), SubActivity.class);
+                startActivityForResult(intent, 1);
+            }
+        });
+
 
     }
 }
