@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">ESMemorandum</string>
+    <string name="textView_Event">事件</string>
+</resources>
