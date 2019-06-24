@@ -14,21 +14,29 @@ import com.example.esmemorandum.R;
 import java.util.ArrayList;
 
 public class ListViewAdapter extends ArrayAdapter<ArrayListItem> {
-    private int resourceId;
     private ArrayList<ArrayListItem> arrayListItems;
     private Context context;
 
     public ListViewAdapter(@Nullable Context context, int resource, @NonNull ArrayList<ArrayListItem> objects) {
         super(context, resource, objects);
         arrayListItems = objects;
-        resourceId = resource;
         this.context = context;
+    }
+
+    public void updateItem(int position, ArrayListItem arrayListItem) {
+        arrayListItems.set(position, arrayListItem);
+        this.notifyDataSetChanged();
+    }
+
+    public void removeItem(int position) {
+        arrayListItems.remove(position);
+        this.notifyDataSetChanged();
     }
 
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        ViewHolder viewHolder = null;
+        ViewHolder viewHolder;
         if (convertView == null) {
             convertView = LayoutInflater.from(context).inflate(R.layout.listview_layout, null);
             viewHolder = new ViewHolder();
