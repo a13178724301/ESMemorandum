@@ -1,12 +1,14 @@
 package com.example.esmemorandum;
 
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.ContextMenu;
 import android.view.Menu;
@@ -68,21 +70,39 @@ public class MainActivity extends AppCompatActivity {
                 menuInflater.inflate(R.menu.mainactivity_listcontextmenu, menu);
             }
         });
-        //TODO click to show details
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(getApplicationContext(), DetailsActivity.class);
+                intent.putExtra("Event", events.get(position));
+                startActivity(intent);
+            }
+        });
     }
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.cmenu_Delete:
-                int id = events.get(selectedItemId).getId();
-                if (db.delete("esm", "id=?", new String[]{String.valueOf(id)}) == 0) {
-                    Toast.makeText(this, "删除失败", Toast.LENGTH_SHORT).show();
-                } else {
-                    listViewAdapter.removeItem(selectedItemId);
-                    events.remove(selectedItemId);
-                    Toast.makeText(this, "删除成功", Toast.LENGTH_SHORT).show();
-                }
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this, R.style.Theme_AppCompat_Dialog_Alert);
+                builder.setTitle("确认删除？").setPositiveButton("确认", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        int id = events.get(selectedItemId).getId();
+                        if (db.delete("esm", "id=?", new String[]{String.valueOf(id)}) == 0) {
+                            Toast.makeText(getApplicationContext(), "删除失败", Toast.LENGTH_SHORT).show();
+                        } else {
+                            listViewAdapter.removeItem(selectedItemId);
+                            events.remove(selectedItemId);
+                            //TODO 撤销闹钟
+                            Toast.makeText(getApplicationContext(), "删除成功", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                }).create().show();
                 break;
 
             case R.id.cmenu_Edit:
@@ -102,7 +122,6 @@ public class MainActivity extends AppCompatActivity {
             SimpleDateFormat sdf_date = event.getSdf_date();
             SimpleDateFormat sdf_time = event.getSdf_time();
             String startDate = sdf_date.format(event.getStartDate()) + sdf_time.format(event.getStartTime());
-            ArrayListItem arrayListItem = new ArrayListItem(startDate, event.getEvent(), event.getLocation());
             String endDate = sdf_date.format(event.getEndDate()) + sdf_time.format(event.getEndTime());
             ContentValues contentValues = new ContentValues();
             contentValues.put("event", event.getEvent());
@@ -112,8 +131,11 @@ public class MainActivity extends AppCompatActivity {
             contentValues.put("remarks", event.getRemarks());
             contentValues.put("vibration", event.isVibration());
             contentValues.put("ring", event.isRing());
+            //TODO 增加闹钟和振动设置
             int id;
             if ((id = (int) db.insert("esm", null, contentValues)) != -1) {
+                startDate = startDate.substring(0, 10) + "\n" + startDate.substring(10);
+                ArrayListItem arrayListItem = new ArrayListItem(startDate, event.getEvent(), event.getLocation());
                 listViewAdapter.add(arrayListItem);
                 event.setId(id);
                 events.add(event);
@@ -128,7 +150,6 @@ public class MainActivity extends AppCompatActivity {
             SimpleDateFormat sdf_date = event.getSdf_date();
             SimpleDateFormat sdf_time = event.getSdf_time();
             String startDate = sdf_date.format(event.getStartDate()) + sdf_time.format(event.getStartTime());
-            ArrayListItem arrayListItem = new ArrayListItem(startDate, event.getEvent(), event.getLocation());
             String endDate = sdf_date.format(event.getEndDate()) + sdf_time.format(event.getEndTime());
             ContentValues contentValues = new ContentValues();
             contentValues.put("event", event.getEvent());
@@ -139,10 +160,13 @@ public class MainActivity extends AppCompatActivity {
             contentValues.put("vibration", event.isVibration());
             contentValues.put("ring", event.isRing());
             events.set(selectedItemId, event);
+            //TODO 更改闹钟和振动设置
             int id = event.getId();
             if (db.update("esm", contentValues, "id=?", new String[]{String.valueOf(id)}) == 0) {
                 Toast.makeText(this, "修改失败", Toast.LENGTH_SHORT).show();
             } else {
+                startDate = startDate.substring(0, 10) + "\n" + startDate.substring(10);
+                ArrayListItem arrayListItem = new ArrayListItem(startDate, event.getEvent(), event.getLocation());
                 listViewAdapter.updateItem(selectedItemId, arrayListItem);
                 Toast.makeText(this, "修改成功", Toast.LENGTH_SHORT).show();
             }
@@ -167,6 +191,7 @@ public class MainActivity extends AppCompatActivity {
 
             case R.id.menu_Search:
                 //TODO search
+
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -175,7 +200,7 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<ArrayListItem> getArrayListItems() {
         ArrayList<ArrayListItem> arrayListItems = new ArrayList<>();
         events.clear();
-        Cursor cursor = db.query("esm", null, null, null, null, null, "id");
+        Cursor cursor = db.query("esm", null, null, null, null, null, "startdate");
         while (cursor.moveToNext()) {
             Event e = new Event();
             SimpleDateFormat sdf_date = e.getSdf_date();
@@ -185,11 +210,11 @@ public class MainActivity extends AppCompatActivity {
             String remarks = cursor.getString(cursor.getColumnIndex("remarks"));
             String startDate = cursor.getString(cursor.getColumnIndex("startdate"));
             String endDate = cursor.getString(cursor.getColumnIndex("enddate"));
-            String startTime = startDate.substring(11);
-            startDate = startDate.substring(0, 11);
-            String endTime = endDate.substring(11);
-            endDate = endDate.substring(0, 11);
-            ArrayListItem arrayListItem = new ArrayListItem(startDate + " " + startTime, event, location);
+            String startTime = startDate.substring(10);
+            startDate = startDate.substring(0, 10);
+            String endTime = endDate.substring(10);
+            endDate = endDate.substring(0, 10);
+            ArrayListItem arrayListItem = new ArrayListItem(startDate + "\n" + startTime, event, location);
             arrayListItems.add(arrayListItem);
             boolean isVibration = Boolean.valueOf(cursor.getInt(cursor.getColumnIndex("vibration")) + "");
             boolean isRing = Boolean.valueOf(cursor.getInt(cursor.getColumnIndex("ring")) + "");

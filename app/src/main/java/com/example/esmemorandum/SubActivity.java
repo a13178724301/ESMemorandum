@@ -2,9 +2,11 @@ package com.example.esmemorandum;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -57,7 +59,7 @@ public class SubActivity extends AppCompatActivity {
         }
 
         TimeZone.setDefault(TimeZone.getTimeZone("GMT+8"));
-        final SimpleDateFormat sdf_Date = new SimpleDateFormat("yyyy年MM月dd日");
+        final SimpleDateFormat sdf_Date = new SimpleDateFormat("yyyy.MM.dd");
         final SimpleDateFormat sdf_Time = new SimpleDateFormat("HH:mm");
         Date date = new Date(System.currentTimeMillis());
         textView_StartDate.setText(sdf_Date.format(date));
@@ -181,16 +183,56 @@ public class SubActivity extends AppCompatActivity {
         Intent intent;
         switch (item.getItemId()) {
             case android.R.id.home:
-                intent = new Intent(SubActivity.this, MainActivity.class);
-                startActivity(intent);
-                this.finish();
+                if (!editText_Event.getText().toString().equals("")) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                    builder.setTitle("是否保存？").setPositiveButton("保存", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            SimpleDateFormat sdf_Date = new SimpleDateFormat("yyyy.MM.dd");
+                            SimpleDateFormat sdf_Time = new SimpleDateFormat("HH:mm");
+                            String sEvent = editText_Event.getText().toString();
+                            String sLocation = editText_Location.getText().toString();
+                            String sRemarks = editText_Remarks.getText().toString();
+                            boolean isVibration = switch_Vibration.isChecked(), isRing = switch_Ring.isChecked();
+                            Date startDate = null, endDate = null, startTime = null, endTime = null;
+                            try {
+                                startDate = sdf_Date.parse(textView_StartDate.getText().toString());
+                                endDate = sdf_Date.parse(textView_EndDate.getText().toString());
+                                startTime = sdf_Time.parse(textView_StartTime.getText().toString());
+                                endTime = sdf_Time.parse(textView_EndTime.getText().toString());
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                            }
+                            Event event = new Event(sEvent, sLocation, startDate, endDate, startTime, endTime, sRemarks, isVibration, isRing);
+                            if (isEdit) {
+                                event.setId(e.getId());
+                            }
+                            Intent intent = new Intent(SubActivity.this, MainActivity.class);
+                            intent.putExtra("Event", event);
+                            setResult((isEdit) ? 2 : 1, intent);
+                            SubActivity.this.finish();
+                        }
+                    }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Intent intent = new Intent(SubActivity.this, MainActivity.class);
+                            setResult(0, intent);
+                            SubActivity.this.finish();
+                        }
+                    }).create().show();
+                } else {
+                    Toast.makeText(this, "未保存更改", Toast.LENGTH_SHORT).show();
+                    intent = new Intent(SubActivity.this, MainActivity.class);
+                    setResult(0, intent);
+                    this.finish();
+                }
                 break;
 
             case R.id.menu_Save:
                 if (editText_Event.getText().toString().equals("")) {
                     Toast.makeText(this, "未填写事件", Toast.LENGTH_SHORT).show();
                 } else {
-                    SimpleDateFormat sdf_Date = new SimpleDateFormat("yyyy年MM月dd日");
+                    SimpleDateFormat sdf_Date = new SimpleDateFormat("yyyy.MM.dd");
                     SimpleDateFormat sdf_Time = new SimpleDateFormat("HH:mm");
                     String sEvent = editText_Event.getText().toString();
                     String sLocation = editText_Location.getText().toString();
@@ -206,14 +248,12 @@ public class SubActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
                     Event event = new Event(sEvent, sLocation, startDate, endDate, startTime, endTime, sRemarks, isVibration, isRing);
-                    event.setId(e.getId());
+                    if (isEdit) {
+                        event.setId(e.getId());
+                    }
                     intent = new Intent(SubActivity.this, MainActivity.class);
                     intent.putExtra("Event", event);
-                    if (!isEdit) {
-                        setResult(1, intent);
-                    } else {
-                        setResult(2, intent);
-                    }
+                    setResult((isEdit) ? 2 : 1, intent);
                     this.finish();
                 }
                 break;
@@ -224,7 +264,7 @@ public class SubActivity extends AppCompatActivity {
                 editText_Location.setText("");
                 editText_Event.setText("");
                 editText_Remarks.setText("");
-                SimpleDateFormat sdf_Date = new SimpleDateFormat("yyyy年MM月dd日");
+                SimpleDateFormat sdf_Date = new SimpleDateFormat("yyyy.MM.dd");
                 SimpleDateFormat sdf_Time = new SimpleDateFormat("HH:mm");
                 Date date = new Date(System.currentTimeMillis());
                 textView_StartDate.setText(sdf_Date.format(date));

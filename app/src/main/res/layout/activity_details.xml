@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".DetailsActivity">
+
+    <TextView
+        android:id="@+id/textView_Date"
+        android:layout_width="281dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textView_Time"
+        android:layout_width="182dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="@+id/textView_Date"
+        app:layout_constraintTop_toBottomOf="@+id/textView_Date" />
+
+    <TextView
+        android:id="@+id/textView_Event"
+        android:layout_width="325dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:fontFamily="sans-serif"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@+id/imageView_Event"
+        app:layout_constraintTop_toTopOf="@+id/imageView_Event" />
+
+    <TextView
+        android:id="@+id/textView_Location"
+        android:layout_width="325dp"
+        android:layout_height="23dp"
+        android:layout_marginStart="8dp"
+        android:fontFamily="sans-serif"
+        android:textSize="18sp"
+        app:layout_constraintStart_toEndOf="@+id/imageView_Location"
+        app:layout_constraintTop_toTopOf="@+id/imageView_Location" />
+
+    <ImageView
+        android:id="@+id/imageView_Ring"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="28dp"
+        android:layout_marginTop="4dp"
+        android:src="@drawable/ic_baseline_alarm_24px"
+        android:visibility="visible"
+        app:layout_constraintStart_toEndOf="@+id/textView_Time"
+        app:layout_constraintTop_toBottomOf="@+id/textView_Date"
+        app:srcCompat="@drawable/ic_baseline_alarm_24px" />
+
+    <ImageView
+        android:id="@+id/imageView_Vibration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:src="@drawable/ic_baseline_vibration_24px"
+        android:visibility="visible"
+        app:layout_constraintStart_toEndOf="@+id/imageView_Ring"
+        app:layout_constraintTop_toTopOf="@+id/imageView_Ring"
+        app:srcCompat="@drawable/ic_baseline_vibration_24px" />
+
+    <ImageView
+        android:id="@+id/imageView_Location"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:labelFor="@id/textView_Location"
+        app:layout_constraintStart_toStartOf="@+id/imageView_Event"
+        app:layout_constraintTop_toBottomOf="@+id/imageView_Event"
+        app:srcCompat="@drawable/ic_baseline_room_24px" />
+
+    <ImageView
+        android:id="@+id/imageView_Event"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:layout_constraintStart_toStartOf="@+id/textView_Time"
+        app:layout_constraintTop_toBottomOf="@+id/textView_Time"
+        app:srcCompat="@drawable/ic_baseline_event_24px" />
+
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="357dp"
+        android:layout_height="165dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintStart_toStartOf="@+id/imageView_Location"
+        app:layout_constraintTop_toBottomOf="@+id/textView_Location">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textView_Remarks"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:fontFamily="sans-serif"
+                android:textSize="18sp" />
+        </LinearLayout>
+    </ScrollView>
+</android.support.constraint.ConstraintLayout>

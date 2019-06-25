@@ -9,9 +9,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
+        <activity android:name=".DetailsActivity"
+            android:theme="@style/DialogTheme"></activity>
         <activity
             android:name=".SubActivity"
-            android:label="@string/label_SubActivity"></activity>
+            android:label="@string/label_SubActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -16,14 +16,14 @@ public class Event implements Serializable {
     private SimpleDateFormat sdf_date, sdf_time;
 
     public Event() {
-        sdf_date = new SimpleDateFormat("yyyy年MM月dd日");
+        sdf_date = new SimpleDateFormat("yyyy.MM.dd");
         sdf_time = new SimpleDateFormat("HH:mm");
         isVibration = false;
         isRing = false;
     }
 
     public Event(String event, String location, Date startDate, Date endDate, Date startTime, Date endTime, String remarks, boolean isVibration, boolean isRing) {
-        sdf_date = new SimpleDateFormat("yyyy年MM月dd日");
+        sdf_date = new SimpleDateFormat("yyyy.MM.dd");
         sdf_time = new SimpleDateFormat("HH:mm");
         this.event = event;
         this.location = location;
